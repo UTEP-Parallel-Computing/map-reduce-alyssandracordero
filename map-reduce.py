@@ -67,7 +67,7 @@ def main():
     }
 
     #print requirements
-    for threads in range(1,9):
+    for threads in range(1,8):
         start_time = time.time()
         map_reduce = count_words_in_files(threads, word_list, files_to_read)
         end_time = time.time()
