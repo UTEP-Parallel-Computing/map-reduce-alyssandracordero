@@ -30,7 +30,7 @@ def combine_docs(files_to_read):
     return words
 
 # PARALLEL - returns the dictionary containing the count of words
-def count_words_in_files(word_list, files_to_read):
+def count_words_in_files(threads, word_list, files_to_read):
     #combine all of the docs in a single list of words
     content = combine_docs(files_to_read)
     
@@ -38,8 +38,7 @@ def count_words_in_files(word_list, files_to_read):
     shared_dict = pymp.shared.dict()
 
     # Count the number of times a word appears in the files and store it in the dict
-    with pymp.Parallel(8) as p:
-        print('Threads working: ', p.num_threads)
+    with pymp.Parallel(threads) as p:
         for word in p.iterate(word_list):
             st = time.time()
             shared_dict[word] = get_count(word, content)
@@ -68,12 +67,12 @@ def main():
     }
 
     #print requirements
-    start_time = time.time()
-    map_reduce = count_words_in_files(word_list, files_to_read)
-    end_time = time.time()
-    total_time = end_time - start_time
-    print('Time of Operation for Total Instances of All Words: ', total_time)
-    
+    for threads in range(1,9):
+        start_time = time.time()
+        map_reduce = count_words_in_files(threads, word_list, files_to_read)
+        end_time = time.time()
+        total_time = end_time - start_time
+        print('Time for Total Instances of All Words: ',total_time, ' when running with ',threads, 'threads')
     for word,occurrances in map_reduce.items():
         print(f'Total of occurrences for {word} : {occurrances}')
 
